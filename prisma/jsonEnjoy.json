@@ -1,0 +1,414 @@
+{
+  "id": "f24aa5f5-c830-4cfd-9322-61bacd83a014",
+  "name": "MainFlow",
+  "startWith": [
+    "Hola",
+    "Buenas",
+    "Buenos días",
+    "Buenas tardes",
+    "Buenas noches"
+  ],
+  "errorNode": "error-node",
+  "errorNoAgentNode": "error-no-agent-node",
+  "outTimeNode": "out-time-node",
+  "flowNodes": [
+    {
+      "id": "greetingsUnknownUser1",
+      "isStartNode": false,
+      "isLastNode": false,
+      "flowCreationClient": true,
+      "isToUnknownUser": true,
+      "flowNodeType": "Question",
+      "flowReplies": [
+        {
+          "data": "¡Hola usuario nuevo!"
+        },
+        {
+          "data": "¿Cuál es tu nombre?"
+        }
+      ],
+      "userKey": "firstName",
+      "userTypeInput": "text",
+      "answerValidation": {
+        "type": "None",
+        "minValue": "",
+        "maxValue": "",
+        "regex": "",
+        "fallback": "",
+        "failsCount": ""
+      },
+      "nodeResultId": {
+        "correct": "pre-greetingsUnknownUser2"
+      }
+    },
+    {
+      "id": "pre-greetingsUnknownUser2",
+      "isStartNode": false,
+      "isLastNode": true,
+      "flowCreationClient": true,
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "También necesitamos tu correo electrónico."
+        }
+      ],
+      "nodeResultId": "greetingsUnknownUser2"
+    },
+    {
+      "id": "greetingsUnknownUser2",
+      "isStartNode": false,
+      "isLastNode": false,
+      "flowCreationClient": true,
+      "flowNodeType": "Question",
+      "flowReplies": [
+        {
+          "data": "¿Cuál es tu correo electrónico?"
+        }
+      ],
+      "userKey": "email",
+      "userTypeInput": "text",
+      "answerValidation": {
+        "type": "email",
+        "minValue": "",
+        "maxValue": "",
+        "regex": "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$",
+        "fallback": "",
+        "failsCount": ""
+      },
+      "nodeResultId": {
+        "correct": "main",
+        "incorrect": "incorrect-email"
+      }
+    },
+    {
+      "id": "incorrect-email",
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "El correo ingresado no es válido."
+        },
+        {
+          "data": "Recuerda seguir el siguiente formato: 'correo@example.com'"
+        }
+      ]
+    },
+    {
+      "id": "main",
+      "isStartNode": true,
+      "isLastNode": false,
+      "flowNodeType": "Buttons",
+      "buttonsHeader": "{{user.firstName}}, ¿en qué te puedo ayudar?",
+      "buttonsFooter": "Para confirmar selecciona una opción:",
+      "buttonsItems": [
+        {
+          "id": "e522c135bee14ded8e031db9ae34c45b",
+          "buttonText": "Contactar Agente",
+          "nodeResultId": "d29455ea95ca4e3fa872b1c4d252c9a8"
+        },
+        {
+          "id": "780f2340-e251-42de-8d07-5e65d0132f5f",
+          "buttonText": "Sorteo",
+          "nodeResultId": "raffle"
+        },
+        {
+          "id": "780f2340-e251-42de-8d07-5e65d0132f5f",
+          "buttonText": "Confirmar torneo",
+          "nodeResultId": "tournamentConfirmation"
+        }
+      ]
+    },
+    {
+      "id": "error-node",
+      "isStartNode": false,
+      "isLastNode": false,
+      "flowNodeType": "Buttons",
+      "buttonsHeader": "No pudimos resolver su solicitud",
+      "buttonsFooter": "¿Deseas volver al inicio?",
+      "buttonsItems": [
+        {
+          "id": "fe693aff-084e-4221-a34b-038a7c4d17fe",
+          "buttonText": "Si",
+          "nodeResultId": "main",
+          "keepCurrentNode": false
+        },
+        {
+          "id": "fa4f0c1c-37ac-441f-8856-3820df18c3e1",
+          "buttonText": "No",
+          "nodeResultId": "c751381326074e63bff5110599779d34",
+          "keepCurrentNode": false
+        },
+        {
+          "id": "c1fa0c4f-d8c1-441f-3810-3820d37ac3e1",
+          "buttonText": "Volver a intentar",
+          "nodeResultId": "keepCurrentNode",
+          "keepCurrentNode": true
+        }
+      ]
+    },
+    {
+      "id": "error-no-agent-node",
+      "isStartNode": false,
+      "isLastNode": false,
+      "flowNodeType": "Buttons",
+      "buttonsHeader": "Lo sentimos, en estos momentos no hay agentes disponibles",
+      "buttonsFooter": "¿Deseas volver al inicio?",
+      "buttonsItems": [
+        {
+          "id": "fe693aff-084e-4221-a34b-038a7c4d17fe",
+          "buttonText": "Si",
+          "nodeResultId": "main",
+          "keepCurrentNode": false
+        },
+        {
+          "id": "fa4f0c1c-37ac-441f-8856-3820df18c3e1",
+          "buttonText": "No",
+          "nodeResultId": "c751381326074e63bff5110599779d34",
+          "keepCurrentNode": false
+        }
+      ]
+    },
+    {
+      "id": "out-time-node",
+      "isStartNode": false,
+      "isLastNode": false,
+      "flowNodeType": "Buttons",
+      "buttonsHeader": "No pudimos resolver su solicitud",
+      "buttonsFooter": "¿Deseas volver al inicio?",
+      "buttonsItems": [
+        {
+          "id": "fe693aff-084e-4221-a34b-038a7c4d17fe",
+          "buttonText": "Si",
+          "nodeResultId": "main",
+          "keepCurrentNode": false
+        },
+        {
+          "id": "fa4f0c1c-37ac-441f-8856-3820df18c3e1",
+          "buttonText": "No",
+          "nodeResultId": "c751381326074e63bff5110599779d34",
+          "keepCurrentNode": false
+        }
+      ]
+    },
+    {
+      "id": "c751381326074e63bff5110599779d34",
+      "isStartNode": false,
+      "isLastNode": false,
+      "isFinishNode": true,
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "Gracias por contactarnos, ¡que tengas un buen día!"
+        }
+      ]
+    },
+    {
+      "id": "d29455ea95ca4e3fa872b1c4d252c9a8",
+      "isStartNode": false,
+      "isLastNode": false,
+      "chatToAdmin": true,
+      "area": "ecf08c4d-38e1-4ee1-894c-04bfab1ab8cf",
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "¡Hola! Mi nombre es {{admin.fullname}}"
+        },
+        {
+          "data": "Cuéntame, ¿en qué te puedo ayudar? :)"
+        }
+      ],
+      "nodeResultId": null
+    },
+    {
+      "id": "raffle",
+      "isStartNode": true,
+      "isLastNode": true,
+      "isFinishNode": false,
+      "nodeResultId": "raffleQuestion",
+      "flowNodeType": "Message",
+      "params": [
+        "user.firstName"
+      ],
+      "flowReplies": [
+        {
+          "data": "{{user.firstName}}, Este MIERCOLES 17 de Mayo en SORTEADOS, tenemos para nuestros socios Enjoy Club 2 premios asegurados para la categoría GOLD de $350.000, y 2 premios adicionales sólo por venir a Enjoy Viña! Participa desde las 21 Hrs."
+        }
+      ]
+    },
+    {
+      "id": "raffleQuestion",
+      "isStartNode": true,
+      "isLastNode": false,
+      "flowNodeType": "Buttons",
+      "buttonsHeader": "{{user.firstName}}",
+      "buttonsFooter": "¿Asistirá a nuestro sorteo?",
+      "buttonsItems": [
+        {
+          "id": "dae636cda3294637b583e7c230a09978",
+          "buttonText": "Si",
+          "nodeResultId": "yesRaffle"
+        },
+        {
+          "id": "eb25aaf7843e40c7bc89761dcc7ea0e9",
+          "buttonText": "No",
+          "nodeResultId": "noRaffle"
+        }
+      ]
+    },
+    {
+      "id": "yesRaffle",
+      "isStartNode": false,
+      "isLastNode": false,
+      "isFinishNode": true,
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "Excelente! te esperamos este MIERCOLES a las 21 Hrs. al sorteo y una gran experiencia de entretención en Enjoy Viña del Mar!  Recuerda Imprimir tus opciones antes para participar."
+        }
+      ]
+    },
+    {
+      "id": "noRaffle",
+      "isStartNode": false,
+      "isLastNode": false,
+      "isFinishNode": true,
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "Que lastima, pero recuerda que puedes utilizar tus opciones acumuladas de la semana el día Viernes, y tendrás más posibilidades de ganar. Te esperamos En Enjoy Viña del Mar!"
+        }
+      ]
+    },
+    {
+      "id": "raffleConfirmation",
+      "isStartNode": true,
+      "isLastNode": false,
+      "flowNodeType": "Buttons",
+      "buttonsHeader": "{{user.firstName}}",
+      "buttonsFooter": "¿Asistirá a nuestro sorteo?",
+      "buttonsItems": [
+        {
+          "id": "dae636cda3294637b583e7c230a09978",
+          "buttonText": "Si",
+          "nodeResultId": "yesRaffleConfirmation"
+        },
+        {
+          "id": "eb25aaf7843e40c7bc89761dcc7ea0e9",
+          "buttonText": "No",
+          "nodeResultId": "noRaffleConfirmation"
+        }
+      ]
+    },
+    {
+      "id": "yesRaffleConfirmation",
+      "isStartNode": false,
+      "isLastNode": false,
+      "isFinishNode": true,
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "Excelente! te esperamos el 24 de Mayo a las 21 Hrs. al sorteo y una gran experiencia de entretención en Enjoy Viña del Mar! Recuerda activar tus opciones antes para participar."
+        }
+      ]
+    },
+    {
+      "id": "noRaffleConfirmation",
+      "isStartNode": false,
+      "isLastNode": false,
+      "isFinishNode": true,
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "Que lastima, pero recuerda que puedes utilizar tus opciones acumuladas de la semana el día Viernes, y tendrás más posibilidades de ganar. Te esperamos!"
+        }
+      ]
+    },
+    {
+      "id": "eventConfirmation",
+      "isStartNode": true,
+      "isLastNode": false,
+      "flowNodeType": "Buttons",
+      "buttonsHeader": "{{user.firstName}}",
+      "buttonsFooter": "¿Asistirá a nuestro evento?",
+      "buttonsItems": [
+        {
+          "id": "dae636cda3294637b583e7c230a09978",
+          "buttonText": "Si",
+          "nodeResultId": "yesEventConfirmation"
+        },
+        {
+          "id": "eb25aaf7843e40c7bc89761dcc7ea0e9",
+          "buttonText": "No",
+          "nodeResultId": "noEventConfirmation"
+        }
+      ]
+    },
+    {
+      "id": "yesEventConfirmation",
+      "isStartNode": false,
+      "isLastNode": false,
+      "isFinishNode": true,
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "Perfecto, queda confirmada la invitación para Miercoles en el evento en Enjoy Viña del Mar, será un gran evento!. Cualquier duda y/o cambio, por favor avisar a su Host Javier, al teléfono 569123445678"
+        }
+      ]
+    },
+    {
+      "id": "noEventConfirmation",
+      "isStartNode": false,
+      "isLastNode": false,
+      "isFinishNode": true,
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "Lamentamos que no pueda asistir, lo contactaremos en un próximo evento o panorama para que pueda disfrutar de la entretención que tenemos preparada este mes en Enjoy Viña del Mar. Recuerde que su host Javier está disponible para atenderlo en el teléfono 56912345678"
+        }
+      ]
+    },
+    {
+      "id": "tournamentConfirmation",
+      "isStartNode": true,
+      "isLastNode": false,
+      "flowNodeType": "Buttons",
+      "buttonsHeader": "{{user.firstName}}",
+      "buttonsFooter": "¿Asistirá a nuestro torneo?",
+      "buttonsItems": [
+        {
+          "id": "dae636cda3294637b583e7c230a09978",
+          "buttonText": "Si",
+          "nodeResultId": "yesTournamentConfirmation"
+        },
+        {
+          "id": "eb25aaf7843e40c7bc89761dcc7ea0e9",
+          "buttonText": "No",
+          "nodeResultId": "noTournamentConfirmation"
+        }
+      ]
+    },
+    {
+      "id": "yesTournamentConfirmation",
+      "isStartNode": false,
+      "isLastNode": false,
+      "isFinishNode": true,
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "Excelente! Te esperamos el 22 de Mayo a las 22 Hrs. en Enjoy Viña del Mar para que participes en el torneo. Recuerda inscribirte en Enjoy. Mucha suerte!"
+        }
+      ]
+    },
+    {
+      "id": "noTournamentConfirmation",
+      "isStartNode": false,
+      "isLastNode": false,
+      "isFinishNode": true,
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "Que lastima, pero recuerda que puedes participar en los próximos torneos. Más información en www.enjoy.cl o en el instagram @enjoyviña con nuestros sorteos, torneos y panoramas. Te esperamos en Enjoy Viña del Mar!"
+        }
+      ]
+    }
+  ]
+}

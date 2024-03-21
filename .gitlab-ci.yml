@@ -1,0 +1,275 @@
+stages:
+  - build
+  - deploy
+
+before_script:
+  - docker-compose --version
+
+build_develop:
+  stage: build
+  image: docker:20.10.21
+  services:
+    - name: docker:20.10.21-dind
+  variables:
+    APP_IMAGE: '$CI_REGISTRY/omnicanal-configuration:develop'
+    NODE_ENV: $NODE_ENV_DEVELOP
+    PORT_APP: $PORT_APP_DEVELOP
+    DOCKER_PORT_APP: $DOCKER_PORT_APP_DEVELOP
+    DB_USERNAME: $DB_USERNAME_DEVELOP
+    DB_HOST: $DB_HOST_DEVELOP
+    DB_PASSWORD: $DB_PASSWORD_DEVELOP
+    DOCKER_DB_PORT: $DOCKER_DB_PORT_DEVELOP
+    DB_PORT: $DB_PORT_DEVELOP
+    DB_NAME: $DB_NAME_DEVELOP
+    MONGODB_LINK: $MONGODB_LINK_DEVELOP
+    DSN_SENTRY: $DSN_SENTRY_DEVELOP
+    CLIENT_ID_ATENEA: $CLIENT_ID_ATENEA_DEVELOP
+    CLIENT_SECRET_ATENEA: $CLIENT_SECRET_ATENEA_DEVELOP
+    GRANT_TYPE_TOKEN_ATENEA: $GRANT_TYPE_TOKEN_ATENEA_DEVELOP
+    REDIRECT_URI_ATENEA: $REDIRECT_URI_ATENEA_DEVELOP
+    BASE_URL_ATENEA: $BASE_URL_ATENEA_DEVELOP
+    CLIENT_ID_CREATE_USER_ATENEA: $CLIENT_ID_CREATE_USER_ATENEA_DEVELOP
+    CLIENT_SECRET_CREATE_USER_ATENEA: $CLIENT_SECRET_CREATE_USER_ATENEA_DEVELOP
+    GRANT_TYPE_CREATE_USER_ATENEA: $GRANT_TYPE_CREATE_USER_ATENEA_DEVELOP
+    SECRET_KEY_TOKEN_SERVICE: $SECRET_KEY_TOKEN_SERVICE_DEVELOP
+    CRYPTO_KEY: $CRYPTO_KEY_DEVELOP
+    BASE_URL_BE_AWARE: $BASE_URL_BE_AWARE_DEVELOP
+    WEBSOCKET_URL: $WEBSOCKET_URL_DEVELOP
+    AWS_ACCESS_KEY_ID_S3:  $AWS_ACCESS_KEY_ID_S3_DEVELOP
+    AWS_SECRET_ACCESS_KEY_S3: $AWS_SECRET_ACCESS_KEY_S3_DEVELOP
+    AWS_BUCKET_NAME_S3: $AWS_BUCKET_NAME_S3_DEVELOP
+  before_script:
+    - docker login -u $CI_DEPLOY_USER -p $CI_DEPLOY_TOKEN $CI_REGISTRY
+  script:
+    # add .env from environment variables
+    - echo "APP_IMAGE=$APP_IMAGE" >> .env
+    - echo "NODE_ENV=$NODE_ENV" >> .env
+    - echo "PORT_APP=$PORT_APP" >> .env
+    - echo "DOCKER_PORT_APP=$DOCKER_PORT_APP" >> .env
+    - echo "DB_USERNAME=$DB_USERNAME" >> .env
+    - echo "DB_HOST=$DB_HOST" >> .env
+    - echo "DB_PASSWORD=$DB_PASSWORD" >> .env
+    - echo "DB_PORT=$DB_PORT" >> .env
+    - echo "DOCKER_DB_PORT=$DOCKER_DB_PORT" >> .env
+    - echo "DB_NAME=$DB_NAME" >> .env
+    - echo 'DATABASE_URL=postgresql://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?schema=public' >> .env
+    - echo "MONGODB_LINK=$MONGODB_LINK" >> .env
+    - echo "DSN_SENTRY=$DSN_SENTRY" >> .env
+    - echo "CLIENT_ID_ATENEA=$CLIENT_ID_ATENEA" >> .env
+    - echo "CLIENT_SECRET_ATENEA=$CLIENT_SECRET_ATENEA" >> .env
+    - echo "GRANT_TYPE_TOKEN_ATENEA=$GRANT_TYPE_TOKEN_ATENEA" >> .env
+    - echo "REDIRECT_URI_ATENEA=$REDIRECT_URI_ATENEA" >> .env
+    - echo "BASE_URL_ATENEA=$BASE_URL_ATENEA" >> .env
+    - echo "CLIENT_ID_CREATE_USER_ATENEA=$CLIENT_ID_CREATE_USER_ATENEA" >> .env
+    - echo "CLIENT_SECRET_CREATE_USER_ATENEA=$CLIENT_SECRET_CREATE_USER_ATENEA" >> .env
+    - echo "GRANT_TYPE_CREATE_USER_ATENEA=$GRANT_TYPE_CREATE_USER_ATENEA" >> .env
+    - echo "SECRET_KEY_TOKEN_SERVICE=$SECRET_KEY_TOKEN_SERVICE" >> .env
+    - echo "CRYPTO_KEY=$CRYPTO_KEY" >> .env
+    - echo "BASE_URL_BE_AWARE=$BASE_URL_BE_AWARE" >> .env
+    - echo "WEBSOCKET_URL=$WEBSOCKET_URL_DEVELOP" >> .env
+    - echo "AWS_ACCESS_KEY_ID_S3=$AWS_ACCESS_KEY_ID_S3_DEVELOP" >> .env
+    - echo "AWS_SECRET_ACCESS_KEY_S3=$AWS_SECRET_ACCESS_KEY_S3_DEVELOP" >> .env
+    - echo "AWS_BUCKET_NAME_S3=$AWS_BUCKET_NAME_S3_DEVELOP" >> .env
+    # build docker image and push to container registry
+    - docker compose -f ./docker/develop/docker-compose.yml --project-directory . build --pull --no-cache configuration-api
+    - docker push $APP_IMAGE
+  only:
+    - develop
+
+deploy_develop:
+  stage: deploy
+  image: docker:20.10.21
+  services:
+    - name: docker:20.10.21-dind
+  variables:
+    PROJECT_FOLDER: $PROJECT_FOLDER_DEVELOP
+    SSH_USER: $SSH_USER_DEVELOP
+    SSH_HOST: $SSH_HOST_DEVELOP
+    SSH_PRIVATE_KEY: $SSH_PRIVATE_KEY
+    APP_IMAGE: '$CI_REGISTRY/omnicanal-configuration:develop'
+    NODE_ENV: $NODE_ENV_DEVELOP
+    PORT_APP: $PORT_APP_DEVELOP
+    DOCKER_PORT_APP: $DOCKER_PORT_APP_DEVELOP
+    DB_USERNAME: $DB_USERNAME_DEVELOP
+    DB_HOST: $DB_HOST_DEVELOP
+    DB_PASSWORD: $DB_PASSWORD_DEVELOP
+    DOCKER_DB_PORT: $DOCKER_DB_PORT_DEVELOP
+    DB_PORT: $DB_PORT_DEVELOP
+    DB_NAME: $DB_NAME_DEVELOP
+    MONGODB_LINK: $MONGODB_LINK_DEVELOP
+    DSN_SENTRY: $DSN_SENTRY_DEVELOP
+    CLIENT_ID_ATENEA: $CLIENT_ID_ATENEA_DEVELOP
+    CLIENT_SECRET_ATENEA: $CLIENT_SECRET_ATENEA_DEVELOP
+    GRANT_TYPE_TOKEN_ATENEA: $GRANT_TYPE_TOKEN_ATENEA_DEVELOP
+    REDIRECT_URI_ATENEA: $REDIRECT_URI_ATENEA_DEVELOP
+    BASE_URL_ATENEA: $BASE_URL_ATENEA_DEVELOP
+    CLIENT_ID_CREATE_USER_ATENEA: $CLIENT_ID_CREATE_USER_ATENEA_DEVELOP
+    CLIENT_SECRET_CREATE_USER_ATENEA: $CLIENT_SECRET_CREATE_USER_ATENEA_DEVELOP
+    GRANT_TYPE_CREATE_USER_ATENEA: $GRANT_TYPE_CREATE_USER_ATENEA_DEVELOP
+    SECRET_KEY_TOKEN_SERVICE: $SECRET_KEY_TOKEN_SERVICE_DEVELOP
+    CRYPTO_KEY: $CRYPTO_KEY_DEVELOP
+    BASE_URL_BE_AWARE: $BASE_URL_BE_AWARE_DEVELOP
+    WEBSOCKET_URL: $WEBSOCKET_URL_DEVELOP
+    AWS_ACCESS_KEY_ID_S3:  $AWS_ACCESS_KEY_ID_S3_DEVELOP
+    AWS_SECRET_ACCESS_KEY_S3: $AWS_SECRET_ACCESS_KEY_S3_DEVELOP
+    AWS_BUCKET_NAME_S3: $AWS_BUCKET_NAME_S3_DEVELOP
+  before_script:
+    # install ssh and ssh key
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    # remove all files from project folder
+    - ssh $SSH_USER@$SSH_HOST "rm -rf ${PROJECT_FOLDER} || true; mkdir -p ${PROJECT_FOLDER}/docker;"
+    # copy docker files to project folder
+    - scp -r docker/develop $SSH_USER@$SSH_HOST:$PROJECT_FOLDER/docker/develop
+    # add .env from environment variables to tmp file
+    - echo "APP_IMAGE=$APP_IMAGE" >> .env
+    - echo "NODE_ENV=$NODE_ENV" >> .env
+    - echo "PORT_APP=$PORT_APP" >> .env
+    - echo "DOCKER_PORT_APP=$DOCKER_PORT_APP" >> .env
+    - echo "DB_USERNAME=$DB_USERNAME" >> .env
+    - echo "DB_HOST=$DB_HOST" >> .env
+    - echo "DB_PASSWORD=$DB_PASSWORD" >> .env
+    - echo "DB_PORT=$DB_PORT" >> .env
+    - echo "DOCKER_DB_PORT=$DOCKER_DB_PORT" >> .env
+    - echo "DB_NAME=$DB_NAME" >> .env
+    - echo 'DATABASE_URL=postgresql://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?schema=public' >> .env
+    - echo "MONGODB_LINK=$MONGODB_LINK" >> .env
+    - echo "DSN_SENTRY=$DSN_SENTRY" >> .env
+    - echo "CLIENT_ID_ATENEA=$CLIENT_ID_ATENEA" >> .env
+    - echo "CLIENT_SECRET_ATENEA=$CLIENT_SECRET_ATENEA" >> .env
+    - echo "GRANT_TYPE_TOKEN_ATENEA=$GRANT_TYPE_TOKEN_ATENEA" >> .env
+    - echo "REDIRECT_URI_ATENEA=$REDIRECT_URI_ATENEA" >> .env
+    - echo "BASE_URL_ATENEA=$BASE_URL_ATENEA" >> .env
+    - echo "CLIENT_ID_CREATE_USER_ATENEA=$CLIENT_ID_CREATE_USER_ATENEA" >> .env
+    - echo "CLIENT_SECRET_CREATE_USER_ATENEA=$CLIENT_SECRET_CREATE_USER_ATENEA" >> .env
+    - echo "GRANT_TYPE_CREATE_USER_ATENEA=$GRANT_TYPE_CREATE_USER_ATENEA" >> .env
+    - echo "SECRET_KEY_TOKEN_SERVICE=$SECRET_KEY_TOKEN_SERVICE" >> .env
+    - echo "CRYPTO_KEY=$CRYPTO_KEY" >> .env
+    - echo "BASE_URL_BE_AWARE=$BASE_URL_BE_AWARE" >> .env
+    - echo "WEBSOCKET_URL=$WEBSOCKET_URL_DEVELOP" >> .env
+    - echo "AWS_ACCESS_KEY_ID_S3=$AWS_ACCESS_KEY_ID_S3_DEVELOP" >> .env
+    - echo "AWS_SECRET_ACCESS_KEY_S3=$AWS_SECRET_ACCESS_KEY_S3_DEVELOP" >> .env
+    - echo "AWS_BUCKET_NAME_S3=$AWS_BUCKET_NAME_S3_DEVELOP" >> .env
+    # copy .env to project folder
+    - scp .env $SSH_USER@$SSH_HOST:$PROJECT_FOLDER/.env
+    # pull and run docker image
+    - >
+      ssh $SSH_USER@$SSH_HOST "
+        cd ${PROJECT_FOLDER};
+        docker login -u ${CI_DEPLOY_USER} -p ${CI_DEPLOY_TOKEN} ${CI_REGISTRY};
+        docker stop configuration-api && docker rm configuration-api || true;
+        docker-compose -f ./docker/develop/docker-compose.yml --project-directory . pull configuration-api;
+        docker-compose -f ./docker/develop/docker-compose.yml --project-directory . up -d;
+      "
+  only:
+    - develop
+
+build_aws_qa:
+  image: jnaxo/dind-awscli:latest
+  stage: build
+  variables:
+    APP_IMAGE: "$DOCKER_APP_IMAGE_QA:latest"
+    DOCKER_PORT_APP: $DOCKER_PORT_APP_QA
+    PORT_APP: $PORT_APP_QA
+    AWS_REGION: $AWS_REGION
+    DB_USERNAME: $DB_USERNAME_QA
+    DB_HOST: $DB_HOST_QA
+    DB_PASSWORD: $DB_PASSWORD_QA
+    DB_PORT: $DB_PORT_QA
+    DB_NAME: $DB_NAME_QA
+  services:
+    - docker:dind
+  before_script:
+    - aws --version
+    - echo "region=$AWS_REGION"
+    - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_QA
+    - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY_QA
+    - $(aws ecr get-login --no-include-email --region $AWS_REGION)
+  script:
+    - echo "DB_USERNAME=$DB_USERNAME" >> .env
+    - echo "DB_HOST=$DB_HOST" >> .env
+    - echo "DB_PASSWORD=$DB_PASSWORD" >> .env
+    - echo "DB_PORT=$DB_PORT" >> .env
+    - echo "DB_NAME=$DB_NAME" >> .env
+    - echo 'DATABASE_URL=postgresql://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?schema=public' >> .env
+    - docker-compose -f ./docker/qa/docker-compose.yml --project-directory . build --pull --no-cache
+    - docker push $APP_IMAGE
+  only:
+    - qa
+
+deploy_aws_qa:
+  image: jnaxo/dind-awscli:latest
+  stage: deploy
+  variables:
+    DOCKER_IMAGE_TAG: "latest"
+  services:
+    - docker:dind
+  before_script:
+    - aws --version
+    - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_QA
+    - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY_QA
+    - $(aws ecr get-login --no-include-email --region $AWS_REGION)
+  script:
+    - aws ecs describe-task-definition --task-definition $AWS_TASK_DEF_QA --region $AWS_REGION | python /task-def-parser.py > task.json
+    - aws ecs register-task-definition --family $AWS_TASK_DEF_QA --requires-compatibilities FARGATE --cli-input-json file://task.json --region $AWS_REGION
+    - aws ecs update-service --cluster $AWS_CLUSTER --service $AWS_SERVICE_QA --task-definition $AWS_TASK_DEF_QA --region $AWS_REGION
+  only:
+    - qa
+
+build_aws_prod:
+  image: jnaxo/dind-awscli:latest
+  stage: build
+  variables:
+    APP_IMAGE: "$DOCKER_APP_IMAGE_PROD:latest"
+    DOCKER_PORT_APP: $DOCKER_PORT_APP_PROD
+    PORT_APP: $PORT_APP_PROD
+    AWS_REGION: $AWS_REGION
+    DB_USERNAME: $DB_USERNAME_PROD
+    DB_HOST: $DB_HOST_PROD
+    DB_PASSWORD: $DB_PASSWORD_PROD
+    DB_PORT: $DB_PORT_PROD
+    DB_NAME: $DB_NAME_PROD
+  services:
+    - docker:dind
+  before_script:
+    - aws --version
+    - echo "region=$AWS_REGION"
+    - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_PROD
+    - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY_PROD
+    - $(aws ecr get-login --no-include-email --region $AWS_REGION)
+  script:
+    - echo "DB_USERNAME=$DB_USERNAME" >> .env
+    - echo "DB_HOST=$DB_HOST" >> .env
+    - echo "DB_PASSWORD=$DB_PASSWORD" >> .env
+    - echo "DB_PORT=$DB_PORT" >> .env
+    - echo "DB_NAME=$DB_NAME" >> .env
+    - echo 'DATABASE_URL=postgresql://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?schema=public' >> .env
+    - docker-compose -f ./docker/prod/docker-compose.yml --project-directory . build --pull --no-cache
+    - docker push $APP_IMAGE
+  only:
+    - main
+
+deploy_aws_prod:
+  image: jnaxo/dind-awscli:latest
+  stage: deploy
+  variables:
+    DOCKER_IMAGE_TAG: "latest"
+  services:
+    - docker:dind
+  before_script:
+    - aws --version
+    - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_PROD
+    - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY_PROD
+    - $(aws ecr get-login --no-include-email --region $AWS_REGION)
+  script:
+    - aws ecs describe-task-definition --task-definition $AWS_TASK_DEF_PROD --region $AWS_REGION | python /task-def-parser.py > task.json
+    - aws ecs register-task-definition --family $AWS_TASK_DEF_PROD --requires-compatibilities FARGATE --cli-input-json file://task.json --region $AWS_REGION
+    - aws ecs update-service --cluster $AWS_CLUSTER --service $AWS_SERVICE_PROD --task-definition $AWS_TASK_DEF_PROD --region $AWS_REGION
+  only:
+    - main

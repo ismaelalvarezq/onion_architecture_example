@@ -1,0 +1,554 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "interactiveTransactions"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model agent {
+  id                   String                  @id @default(uuid())
+  idExternal           Int?
+  firstName            String                  @db.VarChar(50)
+  lastName             String?                 @db.VarChar(50)
+  type                 String                  @db.VarChar(50)
+  status               String                  @default("enabled") @db.VarChar(12)
+  available            Boolean                 @default(true)
+  isConnected          Boolean                 @default(false)
+  password             String                  @db.VarChar(100)
+  initials             String                  @db.VarChar(2)
+  phone                String?                 @db.VarChar(50)
+  email                String                  @unique @db.VarChar(100)
+  age                  Int?
+  rut                  String?                 @db.VarChar(50)
+  gender               String?                 @db.VarChar(50)
+  avatarColor          String                  @db.VarChar(10)
+  avatarUrl            String?                 @db.VarChar(250)
+  createdAt            DateTime                @default(now())
+  updatedAt            DateTime                @updatedAt
+  blocking_history     blocking_history[]
+  chat                 chat[]
+  schedule             schedule[]
+  notes                note[]
+  beAwareConfiguration be_aware_configuration?
+  areas                areas_on_agents[]
+  scheduleDay          schedule_day[]
+  attention_feedback   attention_feedback[]
+}
+
+model be_aware_configuration {
+  id        String @id @default(uuid())
+  idAgent   String @unique
+  user      String
+  password  String
+  company   String
+  secretKey String
+  clientKey String
+  agent     agent  @relation(fields: [idAgent], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_be_aware_configuration_agent")
+}
+
+model blocking_history {
+  id          String    @id @default(uuid())
+  idClient    String
+  type        String    @db.VarChar(250)
+  reason      String?   @db.VarChar(250)
+  timeBlocked String    @db.VarChar(50)
+  dateUnblock DateTime?
+  createdBy   String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  agent       agent     @relation(fields: [createdBy], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_blocking_historyagent")
+  client      client    @relation(fields: [idClient], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_blocking_historyclient")
+
+  @@index([idClient], map: "fk_blocking_historyclient_idx")
+}
+
+model category {
+  id        String     @id @default(uuid())
+  idCompany String
+  name      String     @db.VarChar(50)
+  color     String     @db.VarChar(10)
+  template  template[]
+  company   company    @relation(fields: [idCompany], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_categorycompany")
+
+  @@unique([idCompany, name])
+  @@index([idCompany], map: "fk_categorycompany_idx")
+}
+
+model channel {
+  id                 String               @id @default(uuid())
+  idCompany          String
+  name               String               @db.VarChar(50)
+  type               String               @db.VarChar(50)
+  imageUrl           String?              @db.VarChar(250)
+  company            company              @relation(fields: [idCompany], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_channelcompany")
+  client             client[]
+  env_var            env_var[]
+  flows              flows_on_channels[]
+  client_import_file client_import_file[]
+
+  @@unique([idCompany, type])
+  @@index([idCompany], map: "fk_channelcompany_idx")
+}
+
+model chat {
+  id       String @id @default(uuid())
+  idAgent  String
+  idClient String
+  agent    agent  @relation(fields: [idAgent], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_chatagent")
+  client   client @relation(fields: [idClient], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_chatclient")
+
+  @@index([idAgent], map: "fk_chatagent_idx")
+  @@index([idClient], map: "fk_chatclient_idx")
+}
+
+model client {
+  id                String                          @id @default(uuid())
+  idChannel         String?
+  userIdChannel     String                          @db.VarChar(250)
+  type              String                          @db.VarChar(250)
+  state             String                          @db.VarChar(250)
+  isConnected       Boolean                         @default(false)
+  firstName         String                          @db.VarChar(125)
+  lastName          String?                         @db.VarChar(125)
+  initials          String                          @db.VarChar(2)
+  avatarColor       String                          @db.VarChar(10)
+  avatarUrl         String?                         @db.VarChar(250)
+  phone             String?                         @db.VarChar(50)
+  email             String?                         @db.VarChar(100)
+  createdAt         DateTime                        @default(now())
+  updatedAt         DateTime                        @updatedAt
+  channel           channel?                        @relation(fields: [idChannel], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_clientchannel")
+  blocking_history  blocking_history[]
+  chat              chat[]
+  client_flow_step  client_flow_step[]
+  notes             note[]
+  outboundCampaigns outbound_campaigns_on_clients[]
+  lists             lists_on_clients[]
+
+  @@unique([idChannel, userIdChannel])
+  @@index([idChannel], map: "fk_clientchannel_idx")
+}
+
+model client_import_file {
+  id                       String                @id @default(uuid())
+  idChannel                String
+  name                     String
+  key                      String
+  resultKey                String?
+  numberValidContacts      Int?
+  numberExistingContacts   Int?
+  numberInvalidContacts    Int?
+  numberDuplicatedContacts Int?
+  createdAt                DateTime              @default(now())
+  updatedAt                DateTime              @updatedAt
+  channel                  channel               @relation(fields: [idChannel], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_client_import_filechannel")
+  clientImportFileStates   client_import_state[]
+}
+
+model client_import_state {
+  id                 String             @id @default(uuid())
+  idClientImportFile String
+  name               job_state          @default(CREATED)
+  createdAt          DateTime           @default(now())
+  clientImportFile   client_import_file @relation(fields: [idClientImportFile], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_client_import_stateclient_import_file")
+}
+
+enum job_state {
+  CREATED
+  COMPLETED
+  FAILED
+}
+
+model client_flow_step {
+  id           String  @id @default(uuid())
+  idClient     String
+  status       String? @db.VarChar(50)
+  failsCount   Int?
+  flow         String? @db.VarChar(50)
+  previousFlow String? @db.VarChar(50)
+  answers      Json?   @db.Json
+  answersApi   Json?   @db.Json
+  client       client  @relation(fields: [idClient], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_client_flow_stepclient")
+
+  @@index([idClient], map: "fk_client_flow_stepclient_idx")
+}
+
+enum outbound_campaign_status {
+  REVIEWING
+  SENT
+  FAILED
+  CANCELLED
+}
+
+model outbound_campaign {
+  id                   String                          @id @default(uuid())
+  idNode               String                          @db.VarChar(36)
+  name                 String                          @db.VarChar(200)
+  startDate            DateTime?
+  endDate              DateTime?
+  sent                 Int?                            @default(0)
+  delivered            Int?                            @default(0)
+  read                 Int?                            @default(0)
+  answered             Int?                            @default(0)
+  firstResponseDate    DateTime?
+  firstResponseSeconds Int?
+  status               outbound_campaign_status        @default(REVIEWING)
+  clients              outbound_campaigns_on_clients[]
+}
+
+model outbound_campaigns_on_clients {
+  customVariables    Json?
+  idOutboundCampaign String
+  outboundCampaign   outbound_campaign @relation(fields: [idOutboundCampaign], references: [id])
+  idClient           String
+  client             client            @relation(fields: [idClient], references: [id])
+
+  @@id([idOutboundCampaign, idClient])
+}
+
+model company {
+  id                 String               @id @default(uuid())
+  idWebChat          String?
+  name               String               @db.VarChar(250)
+  fantasyName        String               @db.VarChar(250)
+  webchat_theme      webchat_theme?       @relation(fields: [idWebChat], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_companywebchat_theme")
+  channel            channel[]
+  faq                faq[]
+  category           category[]
+  ticket_category    ticket_category[]
+  ticket_priority    ticket_priority[]
+  ticket_status      ticket_status[]
+  areas              area[]
+  list               list[]
+  plan_config        plan_config[]
+  automatic_response automatic_response[]
+
+  @@index([idWebChat], map: "fk_companywebchat_theme_idx")
+}
+
+model automatic_response_type {
+  id                 String               @id @default(uuid())
+  title              String               @db.VarChar(250)
+  automatic_response automatic_response[]
+}
+
+model automatic_response {
+  id                      String                  @id @default(uuid())
+  idCompany               String
+  idAutomaticResponseType String
+  message                 String                  @db.VarChar(1024)
+  isActive                Boolean
+  company                 company                 @relation(fields: [idCompany], references: [id])
+  automaticResponseType   automatic_response_type @relation(fields: [idAutomaticResponseType], references: [id])
+}
+
+model area {
+  id        String            @id @default(uuid())
+  idCompany String
+  name      String            @db.VarChar(100)
+  company   company           @relation(fields: [idCompany], references: [id])
+  agents    areas_on_agents[]
+
+  @@unique([idCompany, name])
+}
+
+model areas_on_agents {
+  area    area   @relation(fields: [areaId], references: [id])
+  areaId  String
+  agent   agent  @relation(fields: [agentId], references: [id])
+  agentId String
+
+  @@id([agentId, areaId])
+}
+
+model list {
+  id        String             @id @default(uuid())
+  idCompany String
+  name      String             @db.VarChar(100)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  company   company            @relation(fields: [idCompany], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_listcompany")
+  clients   lists_on_clients[]
+
+  @@index([idCompany], map: "fk_listcompany_idx")
+}
+
+model lists_on_clients {
+  idList   String
+  list     list   @relation(fields: [idList], references: [id], onDelete: Cascade)
+  idClient String
+  client   client @relation(fields: [idClient], references: [id])
+
+  @@id([idList, idClient])
+}
+
+model env_var {
+  id        String       @id @default(uuid())
+  idChannel String
+  value     String       @db.VarChar(250)
+  type      env_var_type
+  channel   channel      @relation(fields: [idChannel], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_envchannel")
+
+  @@unique([idChannel, type])
+  @@index([idChannel], map: "fk_envchannel_idx")
+}
+
+enum env_var_type {
+  FACEBOOK_PAGE_ACCESS_TOKEN
+  FACEBOOK_PAGE_ID
+  FACEBOOK_VERIFY_TOKEN
+  FACEBOOK_VERSION
+  INSTAGRAM_ACCESS_TOKEN
+  INSTAGRAM_PAGE_ID
+  INSTAGRAM_VERIFY_TOKEN
+  INSTAGRAM_VERSION
+  WHATSAPP_ACCESS_TOKEN
+  WHATSAPP_BUSINESS_ACCOUNT_ID
+  WHATSAPP_PHONE_NUMBER_ID
+  WHATSAPP_VERIFY_TOKEN
+  WHATSAPP_VERSION
+  WHATSAPP_APP_ID
+  WEBCHAT_ACCESS_TOKEN
+  INSTAGRAM_FACEBOOK_PAGE_ID
+}
+
+model faq {
+  id          String  @id @default(uuid())
+  idCompany   String
+  title       String  @db.VarChar(50)
+  description String  @db.VarChar(500)
+  body        String  @db.VarChar(500)
+  company     company @relation(fields: [idCompany], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_faqcompany")
+
+  @@index([idCompany], map: "fk_faqcompany_idx")
+}
+
+model flow {
+  id            String              @id @default(uuid())
+  jsonFile      Json                @db.Json
+  trigger       String              @db.VarChar(50)
+  channels      flows_on_channels[]
+  flow_feedback flow_feedback[]
+}
+
+model flows_on_channels {
+  idChannel String
+  idFlow    String
+  channel   channel @relation(fields: [idChannel], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  flow      flow    @relation(fields: [idFlow], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([idChannel, idFlow])
+}
+
+model note {
+  id          String   @id @default(uuid())
+  idAuthor    String
+  idClient    String
+  title       String   @db.VarChar(250)
+  description String?  @db.VarChar(250)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  client      client   @relation(fields: [idClient], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_noteclient")
+  agent       agent    @relation(fields: [idAuthor], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_noteagent")
+
+  @@index([idClient], map: "fk_noteclient_idx")
+}
+
+model schedule {
+  id               String   @id @default(uuid())
+  idAgent          String
+  token            String   @db.VarChar(50)
+  checkInTime      DateTime @db.Date
+  checkOutTime     DateTime @db.Date
+  launchTimeStart  DateTime @db.Date
+  launchTimeFinish DateTime @db.Date
+  agent            agent    @relation(fields: [idAgent], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_scheduleagent")
+
+  @@index([idAgent], map: "fk_scheduleagent_idx")
+}
+
+model schedule_day {
+  id             String           @id @default(uuid())
+  idAgent        String
+  weekDay        Int
+  isActive       Boolean
+  agent          agent            @relation(fields: [idAgent], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_scheduledayagent")
+  scheduleRanges schedule_range[]
+
+  @@unique([idAgent, weekDay])
+  @@index([idAgent], map: "fk_scheduledayagent_idx")
+}
+
+model schedule_range {
+  id            String       @id @default(uuid())
+  idScheduleDay String
+  startTime     DateTime     @db.Time()
+  endTime       DateTime     @db.Time()
+  scheduleDay   schedule_day @relation(fields: [idScheduleDay], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_schedulerange_scheduleday")
+
+  @@index([idScheduleDay], map: "fk_schedulerange_scheduleday_idx")
+}
+
+model template {
+  id          String    @id @default(uuid())
+  idCategory  String?
+  title       String    @unique()
+  description String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  category    category? @relation(fields: [idCategory], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_templatecategory")
+
+  @@index([idCategory], map: "fk_templatecategory_idx")
+}
+
+model ticket_category {
+  id        String   @id @default(uuid())
+  idCompany String
+  name      String   @db.VarChar(50)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  company   company  @relation(fields: [idCompany], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_ticket_categorycompany")
+
+  @@index([idCompany], map: "fk_ticket_categorycompany_idx")
+}
+
+model ticket_priority {
+  id        String   @id @default(uuid())
+  idCompany String
+  name      String   @db.VarChar(50)
+  weight    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  company   company  @relation(fields: [idCompany], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_ticket_prioritycompany")
+
+  @@index([idCompany], map: "fk_ticket_prioritycompany_idx")
+}
+
+model ticket_status {
+  id        String   @id @default(uuid())
+  idCompany String
+  name      String   @db.VarChar(50)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  company   company  @relation(fields: [idCompany], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_ticket_statuscompany")
+
+  @@index([idCompany], map: "fk_ticket_statuscompany_idx")
+}
+
+model webchat_theme {
+  id                     String    @id @default(uuid())
+  idCompany              String
+  companyName            String    @db.VarChar(50)
+  webUrl                 String    @db.VarChar(250)
+  backgroundColor        String    @db.VarChar(50)
+  textColor              String    @db.VarChar(50)
+  backgroundMessageColor String    @db.VarChar(50)
+  textMessageColor       String    @db.VarChar(50)
+  mainButtonColor        String    @db.VarChar(50)
+  acccentButtonColor     String    @db.VarChar(50)
+  defaultOpen            Boolean   @default(false)
+  viewOnMobile           Boolean   @default(true)
+  viewOnDesktop          Boolean   @default(true)
+  position               String    @db.VarChar(50)
+  company                company[]
+}
+
+model plan {
+  id                      String        @id @default(uuid())
+  name                    String        @db.VarChar(50)
+  price                   Float
+  canUseWhatsApp          Boolean       @default(false)
+  canUseFacebook          Boolean       @default(false)
+  canUseWebchat           Boolean       @default(false)
+  maxNConversations       Int
+  canRemoveBubbleLogo     Boolean       @default(false)
+  canUseSchedule          Boolean       @default(false)
+  canUseSurvey            Boolean       @default(false)
+  canUseAutoResponse      Boolean       @default(false)
+  canUseChatgpt           Boolean       @default(false)
+  maxNAgents              Int
+  maxNAdmins              Int
+  canUseDashboard         Boolean       @default(false)
+  canUseTemplate          Boolean       @default(false)
+  canUseContactManagement Boolean       @default(false)
+  canUseChatHistory       Boolean       @default(false)
+  canUseOutboundWhatsApp  Boolean       @default(false)
+  canUseBeAware           Boolean       @default(false)
+  createdAt               DateTime      @default(now())
+  updatedAt               DateTime      @updatedAt
+  plan_config             plan_config[]
+
+  @@unique([name])
+}
+
+model plan_config {
+  id                  String         @id @default(uuid())
+  idPlan              String
+  idCompany           String
+  isActive            Boolean        @default(false)
+  name                String         @db.VarChar(50)
+  price               Float
+  channelWhatsApp     Boolean        @default(false)
+  channelFacebook     Boolean        @default(false)
+  channelWebchat      Boolean        @default(false)
+  nConversations      Int
+  removeBubbleLogo    Boolean
+  attentionSchedule   Boolean        @default(false)
+  satisfactionSurvey  Boolean        @default(false)
+  automaticResponse   Boolean        @default(false)
+  chatgpt             Boolean        @default(false)
+  nAgents             Int
+  nAdmins             Int
+  isDashboard         Boolean        @default(false)
+  isTemplate          Boolean        @default(false)
+  isContactManagement Boolean        @default(false)
+  isChatHistory       Boolean        @default(false)
+  isOutboundWhatsApp  Boolean        @default(false)
+  isBeAware           Boolean        @default(false)
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  plan                plan           @relation(fields: [idPlan], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  company             company        @relation(fields: [idCompany], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  plan_summary        plan_summary[]
+
+  @@index([idCompany], map: "fk_plan_configcompany_idx")
+  @@index([idPlan], map: "fk_plan_configplan_idx")
+}
+
+model plan_summary {
+  id                 String      @id @default(uuid())
+  idPlanConfig       String
+  ticketsCount       Int         @default(0)
+  extraConversations Int         @default(0)
+  month              DateTime    @default(now())
+  plan_config        plan_config @relation(fields: [idPlanConfig], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([idPlanConfig], map: "fk_plan_summaryplan_config_idx")
+}
+
+model attention_feedback {
+  id       String  @id @default(uuid())
+  idClient String
+  idAgent  String
+  type     String  @db.VarChar(50)
+  value    Int
+  message  String? @default("") @db.VarChar(250)
+  agent    agent   @relation(fields: [idAgent], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_attention_feedbackagent")
+
+  @@index([idAgent], map: "fk_attention_feedbackagent_idx")
+}
+
+model flow_feedback {
+  id       String  @id @default(uuid())
+  idClient String
+  idFlow   String
+  type     String  @db.VarChar(50)
+  value    Int
+  message  String? @default("") @db.VarChar(250)
+  flow     flow    @relation(fields: [idFlow], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_flow_feedbackflow")
+
+  @@index([idFlow], map: "fk_flow_feedbackflow_idx")
+}

@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "agent" ALTER COLUMN "status" SET DEFAULT E'active',
+ALTER COLUMN "status" SET DATA TYPE VARCHAR(12);

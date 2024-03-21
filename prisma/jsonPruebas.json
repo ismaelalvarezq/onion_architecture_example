@@ -1,0 +1,607 @@
+{
+  "id": "022bc7f7-0369-437d-94c2-a51e6e43caf3",
+  "name": "PruebasUnitarias",
+  "startWith": [
+    "Hola",
+    "Buenas",
+    "Buenos días",
+    "Buenas tardes",
+    "Buenas noches"
+  ],
+  "errorNode": "error-node",
+  "flowNodes": [
+    {
+      "id": "greetingsNewClient1",
+      "isStartNode": false,
+      "isLastNode": false,
+      "isToUnknownUser": true,
+      "flowNodeType": "Question",
+      "flowReplies": [
+        {
+          "data": "¡Hola usuario nuevo!"
+        },
+        {
+          "data": "¿Cuál es tu nombre?"
+        }
+      ],
+      "userKey": "firstName",
+      "userTypeInput": "text",
+      "answerValidation": {
+        "type": "",
+        "minValue": "",
+        "maxValue": "",
+        "regex": "",
+        "fallback": "",
+        "failsCount": ""
+      },
+      "nodeResultId": {
+        "correct": "pre-greetingsNewClient2"
+      }
+    },
+    {
+      "id": "pre-greetingsNewClient2",
+      "isStartNode": false,
+      "isLastNode": true,
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "{{user.firstName}}, también necesitamos tu correo electrónico."
+        }
+      ],
+      "nodeResultId": "greetingsNewClient2"
+    },
+    {
+      "id": "greetingsNewClient2",
+      "isStartNode": false,
+      "isLastNode": false,
+      "flowNodeType": "Question",
+      "flowReplies": [
+        {
+          "data": "¿Cuál es tu correo electrónico?"
+        }
+      ],
+      "userKey": "email",
+      "userTypeInput": "text",
+      "answerValidation": {
+        "type": "",
+        "minValue": "",
+        "maxValue": "",
+        "regex": "^(([^<>()[\\\\]\\\\\\\\.,;:\\\\s@\\\"]+(\\\\.[^<>()[\\\\]\\\\\\\\.,;:\\\\s@\\\"]+)*)|(\\\".+\\\"))@((\\\\[[0-9]{1,3}\\\\.[0-9]{1,3}\\\\.[0-9]{1,3}\\\\.[0-9]{1,3}\\\\])|(([a-zA-Z\\\\-0-9]+\\\\.)+[a-zA-Z]{2,}))$",
+        "fallback": "",
+        "failsCount": ""
+      },
+      "nodeResultId": {
+        "correct": "pre-greetingsNewClient3",
+        "incorrect": "incorrect-email"
+      }
+    },
+    {
+      "id": "incorrect-email",
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "El correo electrónico ingresado no es válido."
+        },
+        {
+          "data": "Recuerda seguir el siguiente formato: \\\"correo@example.com\\\""
+        }
+      ]
+    },
+    {
+      "id": "pre-greetingsNewClient3",
+      "isStartNode": false,
+      "isLastNode": true,
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "{{user.firstName}} tu correo electrónico fue guardado!"
+        }
+      ],
+      "nodeResultId": "greetingsNewClient3"
+    },
+    {
+      "id": "greetingsNewClient3",
+      "isStartNode": false,
+      "isLastNode": false,
+      "flowNodeType": "Question",
+      "flowReplies": [
+        {
+          "data": "Por último necesitamos tu teléfono"
+        },
+        {
+          "data": "Debe seguir el siguiente formato: \\\"+56912341234\\\""
+        }
+      ],
+      "userKey": "phone",
+      "userTypeInput": "text",
+      "answerValidation": {
+        "type": "None",
+        "minValue": "",
+        "maxValue": "",
+        "regex": "^(\\\\+?56)?(\\\\s?)(0?9)(\\\\s?)[9876543]\\\\d{7}$",
+        "fallback": "",
+        "failsCount": ""
+      },
+      "nodeResultId": {
+        "correct": "pre-main",
+        "incorrect": "incorrect-phone"
+      }
+    },
+    {
+      "id": "incorrect-phone",
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "El número de teléfono no es válido."
+        },
+        {
+          "data": "Recuerda seguir el siguiente formato: \\\"+56912341234\\\""
+        }
+      ]
+    },
+    {
+      "id": "error-node",
+      "isStartNode": false,
+      "isLastNode": false,
+      "flowNodeType": "Buttons",
+      "buttonsHeader": "No pudimos resolver su solicitud",
+      "buttonsFooter": "¿Deseas volver al inicio?",
+      "buttonsItems": [
+        {
+          "id": "fe693aff-084e-4221-a34b-038a7c4d17fe",
+          "buttonText": "Si",
+          "nodeResultId": "main",
+          "keepCurrentNode": false
+        },
+        {
+          "id": "fa4f0c1c-37ac-441f-8856-3820df18c3e1",
+          "buttonText": "No",
+          "nodeResultId": "out-node",
+          "keepCurrentNode": false
+        },
+        {
+          "id": "c1fa0c4f-d8c1-441f-3810-3820d37ac3e1",
+          "buttonText": "Volver a intentar",
+          "nodeResultId": "keepCurrentNode",
+          "keepCurrentNode": true
+        }
+      ]
+    },
+    {
+      "id": "end-flow",
+      "isStartNode": false,
+      "isLastNode": false,
+      "flowNodeType": "Buttons",
+      "buttonsHeader": "{{user.firstName}}, ¿deseas hacer algo más?",
+      "buttonsFooter": "Selecciona una opción",
+      "buttonsItems": [
+        {
+          "id": "090f4407d9ba405fa982c1350a91d5fd",
+          "buttonText": "Si, volver al menú",
+          "nodeResultId": "main"
+        },
+        {
+          "id": "8ec9dc429b6f4ed984cef88326e75814",
+          "buttonText": "No, gracias",
+          "nodeResultId": "out-node"
+        }
+      ]
+    },
+    {
+      "id": "out-node",
+      "isStartNode": false,
+      "isLastNode": false,
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "Gracias por contactarnos, ¡que tengas un buen día!"
+        }
+      ]
+    },
+    {
+      "id": "pre-main",
+      "isStartNode": false,
+      "isLastNode": true,
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "{{user.firstName}} tu teléfono fue guardado!"
+        }
+      ],
+      "nodeResultId": "main"
+    },
+    {
+      "id": "main",
+      "isStartNode": true,
+      "isLastNode": false,
+      "flowNodeType": "Buttons",
+      "buttonsHeader": "{{user.firstName}}, ¿en qué te puedo ayudar?",
+      "buttonsFooter": "Para confirmar selecciona una opción:",
+      "buttonsItems": [
+        {
+          "id": "dae636cda3294637b583e7c230a09978",
+          "buttonText": "Preguntar por Datos",
+          "nodeResultId": "asking-data"
+        },
+        {
+          "id": "eb25aaf7843e40c7bc89761dcc7ea0e9",
+          "buttonText": "Reservar Hora",
+          "nodeResultId": "asking-reservation"
+        },
+        {
+          "id": "e522c135bee14ded8e031db9ae34c45b",
+          "buttonText": "Revisar Clima",
+          "nodeResultId": "asking-api"
+        }
+      ]
+    },
+    {
+      "id": "asking-data",
+      "isStartNode": true,
+      "isLastNode": false,
+      "flowNodeType": "Buttons",
+      "buttonsHeader": "¿Qué datos completará?",
+      "buttonsFooter": "Por favor seleccione una opción:",
+      "buttonsItems": [
+        {
+          "id": "dae636cda3294637b583e7c230a09978",
+          "buttonText": "La Edad",
+          "nodeResultId": "asking-age"
+        },
+        {
+          "id": "eb25aaf7843e40c7bc89761dcc7ea0e9",
+          "buttonText": "El Rut",
+          "nodeResultId": "asking-rut"
+        },
+        {
+          "id": "e522c135bee14ded8e031db9ae34c45b",
+          "buttonText": "El Correo Electrónico",
+          "nodeResultId": "asking-email"
+        }
+      ]
+    },
+    {
+      "id": "asking-api",
+      "isStartNode": true,
+      "isLastNode": false,
+      "flowNodeType": "Buttons",
+      "buttonsHeader": "¿Qué datos completará?",
+      "buttonsFooter": "Por favor seleccione una opción:",
+      "buttonsItems": [
+        {
+          "id": "dae636cda3294637b583e7c230a09978",
+          "buttonText": "Revisar Clima Correcto",
+          "nodeResultId": "asking-correctweather"
+        },
+        {
+          "id": "eb25aaf7843e40c7bc89761dcc7ea0e9",
+          "buttonText": "Revisar Clima Incorrecto",
+          "nodeResultId": "asking-incorrectweather"
+        }
+      ]
+    },
+    {
+      "id": "asking-age",
+      "isStartNode": false,
+      "isLastNode": false,
+      "flowNodeType": "Question",
+      "flowReplies": [
+        {
+          "data": "¿Cuál es tu edad?"
+        },
+        {
+          "data": "Recuerda que debes ingresar un número."
+        }
+      ],
+      "userInputVariable": "age",
+      "userTypeInput": "text",
+      "answerValidation": {
+        "type": "number",
+        "minValue": 5,
+        "maxValue": 100,
+        "regex": "",
+        "fallback": "",
+        "failsCount": 2
+      },
+      "nodeResultId": {
+        "correct": "correct-age",
+        "incorrect": "incorrect-age",
+        "failsCount": "error-node"
+      }
+    },
+    {
+      "id": "incorrect-age",
+      "isStartNode": false,
+      "isLastNode": false,
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "La edad ingresada no es válida."
+        },
+        {
+          "data": "Recuerda que debes ingresar un número entre 5 y 100."
+        }
+      ]
+    },
+    {
+      "id": "correct-age",
+      "isStartNode": false,
+      "isLastNode": true,
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "Tu edad de {{user.answers.age}} años quedó registrada.\\n\\n ¡Agradecemos tu respuesta!"
+        }
+      ],
+      "nodeResultId": "end-flow"
+    },
+    {
+      "id": "asking-rut",
+      "isStartNode": false,
+      "isLastNode": false,
+      "flowNodeType": "Question",
+      "flowReplies": [
+        {
+          "data": "¿Cuál es tu Rut?"
+        },
+        {
+          "data": "Ingresa tu Rut sin puntos y con guión"
+        },
+        {
+          "data": "El Rut debe seguir el siguiente formato: 12345678-9"
+        }
+      ],
+      "userInputVariable": "rut_client",
+      "userTypeInput": "rut",
+      "answerValidation": {
+        "type": "",
+        "minValue": "",
+        "maxValue": "",
+        "regex": "^(\\\\d{7,9}-[\\\\dkK])$",
+        "fallback": "",
+        "failsCount": 2
+      },
+      "nodeResultId": {
+        "correct": "correct-rut",
+        "incorrect": "incorrect-rut",
+        "failsCount": "error-node"
+      }
+    },
+    {
+      "id": "incorrect-rut",
+      "isStartNode": false,
+      "isLastNode": false,
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "El 'Rut' ingresado no es válido"
+        },
+        {
+          "data": "Recuerda que el 'Rut' no debe contener puntos y si con guión."
+        },
+        {
+          "data": "El formato sería el siguiente: 12345678-9"
+        }
+      ]
+    },
+    {
+      "id": "correct-rut",
+      "isStartNode": false,
+      "isLastNode": true,
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "Se ha registrado tu rut: {{user.answers.rut_client}}\\n\\n ¡Agradecemos tu respuesta!"
+        }
+      ],
+      "nodeResultId": "end-flow"
+    },
+    {
+      "id": "asking-email",
+      "isStartNode": false,
+      "isLastNode": false,
+      "flowNodeType": "Question",
+      "flowReplies": [
+        {
+          "data": "¿Cuál es tu correo electrónico?"
+        }
+      ],
+      "userInputVariable": "email",
+      "userTypeInput": "text",
+      "answerValidation": {
+        "type": "email",
+        "minValue": "",
+        "maxValue": "",
+        "regex": "",
+        "fallback": "",
+        "failsCount": 2
+      },
+      "nodeResultId": {
+        "correct": "correct-email",
+        "incorrect": "incorrect-email",
+        "failsCount": "error-node"
+      }
+    },
+    {
+      "id": "incorrect-email",
+      "isStartNode": false,
+      "isLastNode": false,
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "El correo electrónico ingresado no es válido."
+        },
+        {
+          "data": "Recuerda seguir el siguiente formato: \\\"correo@example.com\\\""
+        }
+      ]
+    },
+    {
+      "id": "correct-email",
+      "isStartNode": false,
+      "isLastNode": true,
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "{{user.firstName}} tu correo electrónico fue guardado!"
+        }
+      ],
+      "nodeResultId": "end-flow"
+    },
+    {
+      "id": "asking-reservation",
+      "isStartNode": false,
+      "isLastNode": false,
+      "flowNodeType": "Question",
+      "flowReplies": [
+        {
+          "data": "Por favor, ingresa la fecha y hora de tu reserva con el siguiente formato: \\\"DD-MM-AAAA hh:mm\\\""
+        },
+        {
+          "data": "Ejemplo, 20-03-2023 18:30"
+        },
+        {
+          "data": "Recuerda que el rango de la fecha debe ser entre el 15 de Marzo y el 30 de Marzo del 2023"
+        }
+      ],
+      "userInputVariable": "selected_date",
+      "userTypeInput": "date_time",
+      "answerValidation": {
+        "type": "date",
+        "minValue": "2023-03-15",
+        "maxValue": "2023-03-30",
+        "regex": "^([0]?[1-9]|[1|2][0-9]|[3][0|1])[./-]([0]?[1-9]|[1][0-2])[./-]([0-9]{4}|[0-9]{2}) (2[0-3]|[01][0-9])[./:]([0-5][0-9])$",
+        "fallback": "",
+        "failsCount": ""
+      },
+      "nodeResultId": {
+        "correct": "correct-reservation",
+        "incorrect": "incorrect-reservation"
+      }
+    },
+    {
+      "id": "incorrect-reservation",
+      "isStartNode": false,
+      "isLastNode": false,
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "La fecha ingresada es incorrecta. Inténtalo de nuevo."
+        },
+        {
+          "data": "Recuerda seguir el siguiente formato: \\\"DD-MM-AAAA hh:mm\\\""
+        }
+      ]
+    },
+    {
+      "id": "correct-reservation",
+      "isStartNode": false,
+      "isLastNode": true,
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "Tu hora quedó registrada para el {{user.answers.selected_date.day}}-{{user.answers.selected_date.month}}-{{user.answers.selected_date.year}} a las {{user.answers.selected_date.hour}}:{{user.answers.selected_date.minute}} horas \\n\\n ¡Agradecemos tu preferencia!"
+        }
+      ],
+      "nodeResultId": "end-flow"
+    },
+    {
+      "id": "asking-correctweather",
+      "isStartNode": false,
+      "isLastNode": true,
+      "flowNodeType": "API",
+      "flowReplies": [
+        {
+          "data": "Obteniendo información del clima para Valparaíso"
+        },
+        {
+          "data": "La temperatura actual es de {{user.answersApi.currentWeather}}°C"
+        },
+        {
+          "data": "Hoy habrá una mínima de {{user.answersApi.minTemperature}}°C y una máxima de {{user.answersApi.maxTemperature}}°C"
+        }
+      ],
+      "APIUrl": "https://api.open-meteo.com/v1/forecast?latitude=-33.04&longitude=-71.63&daily=weathercode,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,sunrise,sunset&current_weather=true&timezone=auto",
+      "method": "GET",
+      "headers": "",
+      "body": "",
+      "mappingSettings": [
+        {
+          "mappingData": "{{current_weather}}{{temperature}}",
+          "nameVariable": "currentWeather"
+        },
+        {
+          "mappingData": "{{daily}}{{temperature_2m_max}}{{0}}",
+          "nameVariable": "maxTemperature"
+        },
+        {
+          "mappingData": "{{daily}}{{temperature_2m_min}}{{0}}",
+          "nameVariable": "minTemperature"
+        }
+      ],
+      "errorReplies": [
+        {
+          "data": "Ha ocurrido un error al obtener la información"
+        }
+      ],
+      "serverErrorReplies": [
+        {
+          "data": "Ha ocurrido un error en el servidor"
+        },
+        {
+          "data": "Por favor inténtelo más tarde"
+        }
+      ],
+      "nodeResultId": "end-flow"
+    },
+    {
+      "id": "asking-incorrectweather",
+      "isStartNode": false,
+      "isLastNode": true,
+      "flowNodeType": "API",
+      "flowReplies": [
+        {
+          "data": "Obteniendo información del clima para Valparaíso"
+        },
+        {
+          "data": "La temperatura actual es de {{user.answersApi.currentWeather}}°C"
+        },
+        {
+          "data": "Hoy habrá una mínima de {{user.answersApi.minTemperature}}°C y una máxima de {{user.answersApi.maxTemperature}}°C"
+        }
+      ],
+      "APIUrl": "https://api.open-meteo.com/v1/forecast?latitude=-11133.04&longitude=-1111111&daily=weathercode,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,sunrise,sunset&current_weather=true&timezone=auto",
+      "method": "GET",
+      "headers": "",
+      "body": "",
+      "mappingSettings": [
+        {
+          "mappingData": "{{current_weather}}{{temperature}}",
+          "nameVariable": "currentWeather"
+        },
+        {
+          "mappingData": "{{daily}}{{temperature_2m_max}}{{0}}",
+          "nameVariable": "maxTemperature"
+        },
+        {
+          "mappingData": "{{daily}}{{temperature_2m_min}}{{0}}",
+          "nameVariable": "minTemperature"
+        }
+      ],
+      "errorReplies": [
+        {
+          "data": "Ha ocurrido un error al obtener la información"
+        }
+      ],
+      "serverErrorReplies": [
+        {
+          "data": "Ha ocurrido un error en el servidor"
+        },
+        {
+          "data": "Por favor inténtelo más tarde"
+        }
+      ],
+      "nodeResultId": "end-flow"
+    }
+  ]
+}

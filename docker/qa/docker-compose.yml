@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  configuration-api:
+    container_name: 'configuration-api'
+    image: ${APP_IMAGE}
+    environment:
+     - APP_IMAGE
+     - NODE_ENV
+     - PORT_APP
+     - DOCKER_PORT_APP
+     - DB_USERNAME
+     - DB_HOST
+     - DB_PASSWORD
+     - DOCKER_DB_PORT
+     - DB_PORT
+     - DB_NAME
+     - MONGODB_LINK
+     - DSN_SENTRY
+     - CLIENT_ID_ATENEA
+     - CLIENT_SECRET_ATENEA
+     - GRANT_TYPE_TOKEN_ATENEA
+     - REDIRECT_URI_ATENEA
+     - BASE_URL_ATENEA
+     - CLIENT_ID_CREATE_USER_ATENEA
+     - CLIENT_SECRET_CREATE_USER_ATENEA
+     - GRANT_TYPE_CREATE_USER_ATENEA
+     - SECRET_KEY_TOKEN_SERVICE
+     - CRYPTO_KEY
+     - BASE_URL_BE_AWARE
+     - WEBSOCKET_URL
+     - AWS_ACCESS_KEY_ID_S3
+     - AWS_SECRET_ACCESS_KEY_S3
+     - AWS_BUCKET_NAME_S3
+    build:
+      context: .
+      dockerfile: docker/qa/app.dockerfile
+    ports:
+      - '${DOCKER_PORT_APP}:${PORT_APP}'

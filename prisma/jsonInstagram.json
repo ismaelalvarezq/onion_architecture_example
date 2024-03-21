@@ -1,0 +1,300 @@
+{
+  "id": "Jumpitt",
+  "name": "JumpittFlow",
+  "startWith": [
+    "Hola",
+    "Buenas",
+    "Buenos días",
+    "Buenas tardes",
+    "Buenas noches"
+  ],
+  "errorNode": "error-node",
+  "errorNoAgentNode": "error-no-agent-node",
+  "outTimeNode": "out-time-node",
+  "flowNodes": [
+    {
+      "id": "greetingsUnknownUser1",
+      "isStartNode": false,
+      "isLastNode": false,
+      "flowCreationClient": true,
+      "isToUnknownUser": true,
+      "flowNodeType": "Question",
+      "flowReplies": [
+        {
+          "data": "¡Hola! Soy el asistente virtual de Jumpitt y siempre estoy disponible para ayudarte. 😊"
+        },
+        {
+          "data": "¿Me podrías indicar tu nombre?"
+        }
+      ],
+      "userKey": "firstName",
+      "userTypeInput": "text",
+      "answerValidation": {
+        "type": "None",
+        "minValue": "",
+        "maxValue": "",
+        "regex": "",
+        "fallback": "",
+        "failsCount": ""
+      },
+      "nodeResultId": {
+        "correct": "pre-greetingsUnknownUser2"
+      }
+    },
+    {
+      "id": "pre-greetingsUnknownUser2",
+      "isStartNode": false,
+      "isLastNode": true,
+      "flowCreationClient": true,
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "¡Muchas gracias!"
+        }
+      ],
+      "nodeResultId": "greetingsUnknownUser2"
+    },
+    {
+      "id": "greetingsUnknownUser2",
+      "isStartNode": false,
+      "isLastNode": false,
+      "flowCreationClient": true,
+      "flowNodeType": "Question",
+      "flowReplies": [
+        {
+          "data": "Ahora me podrías indicar tu correo electrónico."
+        }
+      ],
+      "userKey": "email",
+      "userTypeInput": "text",
+      "answerValidation": {
+        "type": "email",
+        "minValue": "",
+        "maxValue": "",
+        "regex": "",
+        "fallback": "",
+        "failsCount": ""
+      },
+      "nodeResultId": {
+        "correct": "pre-greetingsUnknownUser3",
+        "incorrect": "incorrect-email"
+      }
+    },
+    {
+      "id": "incorrect-email",
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "Lo siento, el correo ingresado no es válido, por favor intenta nuevamente.\nRecuerda seguir el siguiente formato: ejemplo@correo.com"
+        }
+      ]
+    },
+    {
+      "id": "pre-greetingsUnknownUser3",
+      "isStartNode": false,
+      "isLastNode": true,
+      "flowCreationClient": true,
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "Por último, necesitaré tu número de teléfono."
+        }
+      ],
+      "nodeResultId": "greetingsUnknownUser3"
+    },
+    {
+      "id": "greetingsUnknownUser3",
+      "isStartNode": false,
+      "isLastNode": false,
+      "flowCreationClient": true,
+      "flowNodeType": "Question",
+      "flowReplies": [
+        {
+          "data": "El teléfono debe seguir el siguiente formato: +56967896789"
+        }
+      ],
+      "userKey": "phone",
+      "userTypeInput": "text",
+      "answerValidation": {
+        "type": "None",
+        "minValue": "",
+        "maxValue": "",
+        "regex": "^(\\+?56)?(\\s?)(0?9)(\\s?)\\d{8}$",
+        "fallback": "",
+        "failsCount": ""
+      },
+      "nodeResultId": {
+        "correct": "mainMessage",
+        "incorrect": "incorrect-phone"
+      }
+    },
+    {
+      "id": "incorrect-phone",
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "Lo siento, el número de teléfono no es válido, por favor intenta nuevamente. \nEl teléfono debe seguir el siguiente formato: +56967896789"
+        }
+      ]
+    },
+    {
+      "id": "mainMessage",
+      "isStartNode": false,
+      "isLastNode": true,
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "¡Gracias por la información!"
+        }
+      ],
+      "nodeResultId": "mainButtons"
+    },
+    {
+      "id": "mainButtons",
+      "isStartNode": true,
+      "isLastNode": false,
+      "flowNodeType": "Buttons",
+      "buttonsHeader": "Revisa las opciones que tenemos para ti:",
+      "buttonsFooter": "Selecciona alguna de las 2 opciones:",
+      "buttonsItems": [
+        {
+          "id": "dae636cda3294637b583e7c230a09978",
+          "buttonText": "Quiero desarrollar una idea",
+          "nodeResultId": "ideaNode"
+        },
+        {
+          "id": "eb25aaf7843e40c7bc89761dcc7ea0e9",
+          "buttonText": "Unirme al equipo",
+          "nodeResultId": "unirmeNode"
+        }
+      ]
+    },
+    {
+      "id": "ideaNode",
+      "isStartNode": false,
+      "isLastNode": true,
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "Si tienes un proyecto en mente o quieres desarrollar el futuro de tu empresa llegaste al lugar indicado 🤩"
+        },
+        {
+          "data": "En Jumpitt ofrecemos servicios de desarrollo web, desarrollo mobile y experiencia usuario."
+        },
+        {
+          "data": "Cuéntanos de tu proyecto y cotiza con nosotros en 👉 https://www.jumpitt.com/contacto"
+        },
+        {
+          "data": "También puedes escribirnos al siguiente correo electrónico a contacto@jumpitt.com"
+        }
+      ],
+      "nodeResultId": "finalNode"
+    },
+    {
+      "id": "unirmeNode",
+      "isStartNode": false,
+      "isLastNode": true,
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "Jump into the force!\nSé parte de este gran equipo e impulsa tu carrera profesional en Jumpitt 😉"
+        },
+        {
+          "data": "Buscamos talento en estas áreas: 👇\n-UX/UI\n-Android dev\n-IOS dev\n-Backend dev\n-Fronted dev\n-Project Manager\n-QA analyst\n-DevOps\n-Trainee"
+        },
+        {
+          "data": "Si quieres postular accede a este link 👉 https://www.jumpitt.com/contacto-team\nCompleta el formulario y adjunta tu CV actualizado 😊"
+        }
+      ],
+      "nodeResultId": "finalNode"
+    },
+    {
+      "id": "finalNode",
+      "isStartNode": false,
+      "isLastNode": false,
+      "flowNodeType": "Buttons",
+      "buttonsHeader": "¿Te puedo ayudar en algo más? 😇",
+      "buttonsFooter": "Selecciona una opción:",
+      "buttonsItems": [
+        {
+          "id": "dae636cda3294637b583e7c230a09978",
+          "buttonText": "Si",
+          "nodeResultId": "mainButtons"
+        },
+        {
+          "id": "eb25aaf7843e40c7bc89761dcc7ea0e9",
+          "buttonText": "No",
+          "nodeResultId": "endingNode"
+        }
+      ]
+    },
+    {
+      "id": "endingNode",
+      "isStartNode": false,
+      "isLastNode": false,
+      "flowNodeType": "Buttons",
+      "buttonsHeader": "¿Fue útil mi ayuda?",
+      "buttonsFooter": "Selecciona una opción:",
+      "buttonsItems": [
+        {
+          "id": "dae636cda3294637b583e7c230a09978",
+          "buttonText": "Si",
+          "nodeResultId": "siAyuda"
+        },
+        {
+          "id": "eb25aaf7843e40c7bc89761dcc7ea0e9",
+          "buttonText": "No",
+          "nodeResultId": "noAyuda"
+        }
+      ]
+    },
+    {
+      "id": "siAyuda",
+      "isStartNode": false,
+      "isLastNode": false,
+      "isFinishNode": true,
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "¡Me alegro! Estaré aquí cuando me necesites.\nQue tengas un buen día. 😊"
+        }
+      ],
+      "nodeResultId": "mainButtons"
+    },
+    {
+      "id": "noAyuda",
+      "isStartNode": false,
+      "isLastNode": false,
+      "isFinishNode": true,
+      "flowNodeType": "Message",
+      "flowReplies": [
+        {
+          "data": "¡Ouch! 🤕\nSigo en entrenamiento, ¡espero mejorar para la próxima!\nQue tengas un buen día. 😊"
+        }
+      ],
+      "nodeResultId": "mainButtons"
+    },
+    {
+      "id": "error-node",
+      "isStartNode": false,
+      "isLastNode": false,
+      "flowNodeType": "Buttons",
+      "buttonsHeader": "No pudimos resolver su solicitud",
+      "buttonsFooter": "¿Deseas volver al inicio?",
+      "buttonsItems": [
+        {
+          "id": "fe693aff-084e-4221-a34b-038a7c4d17fe",
+          "buttonText": "Si",
+          "nodeResultId": "mainMessage",
+          "keepCurrentNode": false
+        },
+        {
+          "id": "fa4f0c1c-37ac-441f-8856-3820df18c3e1",
+          "buttonText": "No",
+          "nodeResultId": "finalNode",
+          "keepCurrentNode": false
+        }
+      ]
+    }
+  ]
+}
